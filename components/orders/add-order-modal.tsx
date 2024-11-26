@@ -15,7 +15,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,14 +23,34 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAction } from "next-safe-action/hooks";
 import toast from "react-hot-toast";
-import Image from "next/image";
-import { UploadButton } from "@/app/api/uploadthing/upload";
-import { useState } from "react";
 import { OrderSchema } from "@/types/orders-schema";
 import { addOrder } from "@/server/actions/orders-actions";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+interface Customer {
+  id: string;
+  name: string;
+}
 
 const AddOrder = () => {
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      const response = await fetch('/api/customers');
+      const data = await response.json();
+      setCustomers(data);
+    };
+    fetchCustomers();
+  }, []);
+
   const form = useForm<z.infer<typeof OrderSchema>>({
     resolver: zodResolver(OrderSchema),
     defaultValues: {
@@ -80,12 +99,26 @@ const AddOrder = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Customer Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="John Doe"
-                      {...field}
-                    />
-                  </FormControl>
+                  <Select 
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a customer" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {customers.map((customer) => (
+                        <SelectItem 
+                          key={customer.id} 
+                          value={customer.name}
+                        >
+                          {customer.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -112,7 +145,7 @@ const AddOrder = () => {
               name="totalAmount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Total Ammount</FormLabel>
+                  <FormLabel>Total Amount</FormLabel>
                   <FormControl>
                     <Input
                       type="number"

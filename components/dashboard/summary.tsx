@@ -6,9 +6,9 @@ import {
   Package,
   Shirt,
   LucideIcon,
-  Icon,
 } from "lucide-react";
 import AnalyticsCard from "./analytics-card";
+import { db } from "@/server/db";
 
 interface SummaryCardProps {
   title: string;
@@ -59,37 +59,46 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   );
 };
 
-const Summary = () => {
+const Summary = async () => {
+  const orders = await db.orders.count();
+  const products = await db.product.count();
+  const customers = await db.customers.count();
+  
+  // Calculate total revenue from orders
+  const allOrders = await db.orders.findMany();
+  const totalRevenue = allOrders.reduce((acc, order) => acc + order.totalAmount, 0);
+
   const summaryData = [
     {
       title: "Orders",
-      value: "1,342",
+      value: orders.toString(),
       icon: Package,
       change: "+30% since last year",
       changeType: "increase",
     },
     {
       title: "Revenue",
-      value: "$29,072",
+      value: `$${totalRevenue.toLocaleString()}`,
       icon: DollarSign,
       change: "-80% since last year",
       changeType: "decrease",
     },
     {
       title: "Customers",
-      value: "3,242",
+      value: customers.toString(),
       icon: Users,
       change: "+10% since last year",
       changeType: "increase",
     },
     {
       title: "Products",
-      value: "20",
+      value: products.toString(),
       icon: Shirt,
       change: "-11% since last year",
       changeType: "decrease",
     },
   ];
+
   return (
     <AnalyticsCard
       title="Summary"

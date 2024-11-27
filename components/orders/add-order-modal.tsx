@@ -56,7 +56,6 @@ const AddOrder = () => {
     defaultValues: {
       customerName: "",
       address: "",
-      orderNumber: 0,
       totalAmount: 0,
     },
   });
@@ -150,23 +149,6 @@ const AddOrder = () => {
                     <Input
                       type="number"
                       placeholder="1234"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="orderNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Order Number</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="1900"
                       {...field}
                     />
                   </FormControl>

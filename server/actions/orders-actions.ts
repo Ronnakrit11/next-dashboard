@@ -7,30 +7,21 @@ import { DeleteOrderSchema, OrderSchema } from "@/types/orders-schema"
 export const addOrder = actionClient
   .schema(OrderSchema)
   .action(
-    async ({ parsedInput: {customerName, address,orderNumber, totalAmount, } }) => {
-
-      const existingOrder = await db.orders.findFirst({
-        where: {orderNumber}
-      })
-
-      if (existingOrder) {
-        return {error: `Order Number ${orderNumber} is already taken`}
-      }
+    async ({ parsedInput: {customerName, address, totalAmount } }) => {
       await db.orders.create({
         data: {
-          customerName:customerName,
+          customerName: customerName,
           address: address,
-          orderNumber: orderNumber,
           totalAmount: totalAmount,
         }})
     revalidatePath("/", "layout")
-    return {success: `Order Number ${orderNumber} has been created`}
+    return {success: `Order has been created successfully`}
   })
 
-  export const deleteOrder = actionClient
+export const deleteOrder = actionClient
   .schema(DeleteOrderSchema)
   .action(
-    async ({ parsedInput: { id} }) => {
+    async ({ parsedInput: { id } }) => {
       await db.orders.delete({
         where: {id: id}
         })

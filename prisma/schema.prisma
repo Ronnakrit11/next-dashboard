@@ -75,7 +75,7 @@ model Orders {
   customerName String
   address      String
   totalAmount  Int
-  orderNumber  Int
+  orderNumber  String   @unique @default(cuid())
   date         DateTime @default(now())
 }
 

@@ -64,9 +64,14 @@ const Summary = async () => {
   const products = await db.product.count();
   const customers = await db.customers.count();
   
-  // Calculate total revenue from orders
-  const allOrders = await db.orders.findMany();
-  const totalRevenue = allOrders.reduce((acc, order) => acc + order.totalAmount, 0);
+  // Calculate total revenue from orders using select to only get totalAmount
+  const orderAmounts = await db.orders.findMany({
+    select: {
+      totalAmount: true
+    }
+  });
+  
+  const totalRevenue = orderAmounts.reduce((acc, order) => acc + order.totalAmount, 0);
 
   const summaryData = [
     {
